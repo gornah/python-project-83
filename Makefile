@@ -1,7 +1,7 @@
 PORT ?= 8000
 
 install:
-	pip install -r requirements.txt
+	pip install uv
 	uv sync
 
 dev:
