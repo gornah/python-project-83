@@ -10,6 +10,7 @@
             crossorigin="anonymous">
         <title>Анализатор страниц</title>
     </head>
+
     <body class="min-vh-100 d-flex flex-column">
         <header class="flex-shrink-0">
             <nav class="navbar navbar-expand-md navbar-dark bg-dark px-3">
@@ -23,8 +24,15 @@
                 </div>
             </nav>
         </header>
+
+        {% for category, message in get_flashed_messages(with_categories=true) %}
+            <div class="alert alert-{{ category }}" role="alert">{{ message }}</div>
+        {% endfor %}
+
         <main class="flex-grow-1">
             <div class="container-lg mt-3">
+                
+                {% block content %}
                 <div class="row">
                     <div class="col-12 col-md-10 col-lg-8 mx-auto border rounded-3 bg-light p-5">
                         <h1 class="display-3">Анализатор страниц</h1>
@@ -38,8 +46,11 @@
                         </form>
                     </div>
                 </div>
+                {% endblock %}
+
             </div>
         </main>
+
         <footer class="border-top py-3 mt-5 flex-shrink-0">
             <div class="container-lg">
                 <div class="text-center">
@@ -47,5 +58,6 @@
                 </div>
             </div>
         </footer>
+
     </body>
 </html>

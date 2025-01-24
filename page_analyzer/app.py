@@ -36,24 +36,24 @@ def urls():
     input_url = request.form.get('url')
     errors = validate(input_url)
     if errors:
-        for error in errors:
-            flash(error, 'danger')
-        messages = get_flashed_messages(with_categories=True)
+        flash('Некорректный URL', 'danger')
         return render_template(
             'index.html',
-            messages=messages,
             input_url=input_url
             ), 422
+
     url = normalize_url(input_url)
     existing_url = get_url('name', url)
+
     if existing_url:
         flash('Страница уже существует', 'info')
         id = existing_url.id
         return redirect(url_for('url_details', id=id))
+
     add_url_to_base(url)
     id = get_url('name', url).id
     flash('Страница успешно добавлена', 'success')
-    return redirect(url_for('url_details', id=id))
+    return redirect(url_for('url_details', id=id)), 302
 
 
 @app.get('/urls')
@@ -79,4 +79,4 @@ def url_checks(id: int):
         return redirect(url_for('url_details', id=id))
     add_check_to_base(id, check_data)
     flash('Страница успешно проверена', 'success')
-    return redirect(url_for('url_details', id=id))
+    return redirect(url_for('url_details', id=id)), 302

@@ -2,17 +2,10 @@ from contextlib import contextmanager
 from psycopg2.extras import NamedTupleCursor
 from psycopg2 import pool
 from datetime import datetime
-# from dotenv import load_dotenv
-from .config import DATABASE_URL
-# import os
+from page_analyzer.config import DATABASE_URL
 
-
-# load_dotenv()
-
-# DATABASE_URL = os.getenv('DATABASE_URL')
-
-if not DATABASE_URL:
-    raise ValueError("DATABASE_URL is not set in the environment variables.")
+# if not DATABASE_URL:
+#    raise ValueError("DATABASE_URL is not set in the environment variables.")
 
 connection_pool = pool.SimpleConnectionPool(1, 10, DATABASE_URL)
 
@@ -93,7 +86,15 @@ def add_check_to_base(id, check_data):
     query = '''INSERT INTO url_checks
             (url_id, status_code, h1, title, description, created_at)
             VALUES (%s, %s, %s, %s, %s, %s)'''
-    add_to_db(query, id, *check_data, datetime.now())
+    add_to_db(
+        query,
+        id,
+        check_data['status_code'],
+        check_data['h1'],
+        check_data['title'],
+        check_data['description'],
+        datetime.now()
+        )
 
 
 def get_urls_with_checks(id):
