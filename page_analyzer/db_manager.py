@@ -1,7 +1,9 @@
 from contextlib import contextmanager
-from psycopg2.extras import NamedTupleCursor
-from psycopg2 import pool
 from datetime import datetime
+
+from psycopg2 import pool
+from psycopg2.extras import NamedTupleCursor
+
 from page_analyzer.config import DATABASE_URL
 
 # if not DATABASE_URL:

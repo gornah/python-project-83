@@ -1,22 +1,22 @@
-from .config import SECRET_KEY
-from .url_utils import validate, normalize_url, get_check_data
 from flask import (
     Flask,
     flash,
     get_flashed_messages,
+    redirect,
     render_template,
     request,
-    redirect,
-    url_for
-)
-from .db_manager import (
-    get_url,
-    get_url_list,
-    add_url_to_base,
-    add_check_to_base,
-    get_urls_with_checks
+    url_for,
 )
 
+from .config import SECRET_KEY
+from .db_manager import (
+    add_check_to_base,
+    add_url_to_base,
+    get_url,
+    get_url_list,
+    get_urls_with_checks,
+)
+from .url_utils import get_check_data, normalize_url, validate
 
 app = Flask(__name__)
 
