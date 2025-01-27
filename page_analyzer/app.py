@@ -1,3 +1,4 @@
+import requests
 from flask import (
     Flask,
     flash,
@@ -10,20 +11,18 @@ from flask import (
 
 from .config import SECRET_KEY
 from .db_manager import (
-    add_check_to_base,
-    add_url_to_base,
+    add_check,
+    add_url,
     get_url,
     get_url_list,
     get_urls_with_checks,
 )
-from .url_utils import get_check_data, normalize_url, validate
+from .parser import get_check_data
+from .url_utils import normalize_url, validate
 
 app = Flask(__name__)
 
 app.config['SECRET_KEY'] = SECRET_KEY
-
-# if not app.config['SECRET_KEY']:
-#     raise RuntimeError("SECRET_KEY is not set. Check your env variables.")
 
 
 @app.route('/')
@@ -50,8 +49,7 @@ def urls():
         id = existing_url.id
         return redirect(url_for('url_details', id=id))
 
-    add_url_to_base(url)
-    id = get_url('name', url).id
+    id = add_url(url)
     flash('Страница успешно добавлена', 'success')
     return redirect(url_for('url_details', id=id)), 302
 
@@ -74,9 +72,9 @@ def url_checks(id: int):
     url = get_url('id', id).name
     try:
         check_data = get_check_data(url)
-    except Exception:
+    except requests.exceptions.RequestException:
         flash('Произошла ошибка при проверке', 'danger')
         return redirect(url_for('url_details', id=id))
-    add_check_to_base(id, check_data)
+    add_check(id, check_data)
     flash('Страница успешно проверена', 'success')
     return redirect(url_for('url_details', id=id)), 302

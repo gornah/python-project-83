@@ -6,9 +6,6 @@ from psycopg2.extras import NamedTupleCursor
 
 from page_analyzer.config import DATABASE_URL
 
-# if not DATABASE_URL:
-#    raise ValueError("DATABASE_URL is not set in the environment variables.")
-
 connection_pool = pool.SimpleConnectionPool(1, 10, DATABASE_URL)
 
 
@@ -35,14 +32,16 @@ def get_from_db(query, value=None, fetch=''):
     return data
 
 
-def add_to_db(query, *args):
+def add_to_db(query, *args, returning=False):
     """
     Executes an INSERT query.
     """
     with get_connection() as conn:
         with conn.cursor(cursor_factory=NamedTupleCursor) as cursor:
             cursor.execute(query, args)
+            result = cursor.fetchone() if returning else None
         conn.commit()
+    return result
 
 
 def get_url(search_by, value):
@@ -73,15 +72,16 @@ def get_url_list():
     return get_from_db(query, fetch='all')
 
 
-def add_url_to_base(url):
+def add_url(url):
     """
-    Adds a new URL to the `urls` table.
+    Adds a new URL to the `urls` table and returns its ID.
     """
-    query = 'INSERT INTO urls (name, created_at) VALUES (%s, %s);'
-    add_to_db(query, url, datetime.now())
+    query = 'INSERT INTO urls (name, created_at) VALUES (%s, %s) RETURNING id;'
+    result = add_to_db(query, url, datetime.now(), returning=True)
+    return result[0]
 
 
-def add_check_to_base(id, check_data):
+def add_check(id, check_data):
     """
     Adds check data for a URL to the `url_checks` table.
     """
